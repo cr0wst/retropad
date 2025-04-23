@@ -5,6 +5,8 @@
 	import SearchIcon from '~icons/mdi/magnify';
 	import TagIcon from '~icons/mdi/tag-outline';
 	import { goto } from '$app/navigation';
+	import ChevronRightIcon from '~icons/mdi/chevron-right';
+	import TrashIcon from '~icons/mdi/trash';
 
 	let { data } = $props();
 
@@ -50,6 +52,33 @@
 
 	function setTagFilter(tag: string | null): void {
 		selectedTagFilter = tag;
+	}
+
+	function getTagsArray(tags: string[] | undefined): string[] {
+		return tags || [];
+	}
+
+	function formatDate(date: string): string {
+		return new Date(date).toLocaleDateString();
+	}
+
+	// Add delete function
+	async function deletePad(id: string) {
+		try {
+			const response = await fetch(`/api/pads/${id}`, {
+				method: 'DELETE'
+			});
+
+			if (!response.ok) {
+				throw new Error('Failed to delete pad');
+			}
+
+			// Remove the pad from local state
+			pads = pads.filter((pad) => pad.id !== id);
+		} catch (error) {
+			console.error('Error deleting pad:', error);
+			// TODO: Show error toast or notification
+		}
 	}
 </script>
 
@@ -136,35 +165,48 @@
 	{:else}
 		<div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
 			{#each filteredPads as pad}
-				<div
-					class="group cursor-pointer rounded-lg border border-zinc-800 bg-gradient-to-br from-zinc-900 to-zinc-800/80 p-4 transition-all duration-200 hover:border-zinc-700 hover:shadow-lg"
-					onclick={() => navigateToPad(pad.id)}
-				>
-					<div class="mb-2 flex items-start justify-between">
-						<h3 class="text-lg font-semibold text-white group-hover:text-purple-300">
-							{pad.name}
-						</h3>
-						<DocumentIcon class="h-5 w-5 text-purple-400" />
-					</div>
+				<div class="group relative">
+					<button
+						class="relative w-full cursor-pointer rounded-lg border border-zinc-800 bg-gradient-to-br from-zinc-900 to-zinc-800/80 p-4 transition-all duration-200 hover:border-zinc-700 hover:shadow-lg"
+						onclick={() => navigateToPad(pad.id)}
+						aria-label={`Open pad: ${pad.name}`}
+					>
+						<div class="flex items-center justify-between pr-8">
+							<div class="flex items-center gap-2">
+								<GamepadIcon class="h-5 w-5 text-purple-400" />
+								<h2 class="text-lg font-medium text-white">{pad.name}</h2>
+							</div>
+						</div>
 
-					{#if pad.description}
-						<p class="mb-4 line-clamp-2 text-sm text-zinc-400">{pad.description}</p>
-					{/if}
+						{#if pad.description}
+							<p class="mt-2 text-sm text-zinc-400">{pad.description}</p>
+						{/if}
 
-					<div class="mt-auto flex justify-between">
-						<div class="flex flex-wrap gap-1">
-							{#if pad.tags && pad.tags.length > 0}
-								{#each pad.tags as tag}
-									<span class="rounded-full bg-zinc-800 px-2 py-0.5 text-xs text-zinc-400">
+						<div class="mt-4 flex items-center justify-between">
+							<div class="flex flex-wrap gap-1">
+								{#each getTagsArray(pad.tags) as tag}
+									<span class="rounded-full bg-zinc-800 px-1.5 py-0.5 text-xs text-zinc-400">
 										{tag}
 									</span>
 								{/each}
-							{/if}
+							</div>
+							<span class="text-xs text-zinc-500">{formatDate(pad.updatedAt)}</span>
 						</div>
-						<span class="text-xs text-zinc-500">
-							{new Date(pad.updatedAt).toLocaleDateString()}
-						</span>
-					</div>
+					</button>
+					<button
+						onclick={(e) => {
+							e.stopPropagation();
+							if (
+								confirm('Are you sure you want to delete this pad? This action cannot be undone.')
+							) {
+								deletePad(pad.id);
+							}
+						}}
+						class="absolute top-3 right-3 z-10 rounded-md bg-zinc-800/50 p-2 text-zinc-400 opacity-0 transition-all duration-200 group-hover:opacity-100 hover:bg-red-500/20 hover:text-red-400"
+						aria-label="Delete pad"
+					>
+						<TrashIcon class="h-4 w-4" />
+					</button>
 				</div>
 			{/each}
 		</div>

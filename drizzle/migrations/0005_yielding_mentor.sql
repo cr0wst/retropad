@@ -1,0 +1,1 @@
+ALTER TABLE `notes` ADD `owner_id` text NOT NULL REFERENCES auth_user(id);

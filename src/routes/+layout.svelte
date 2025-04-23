@@ -192,7 +192,11 @@
 					</div>
 
 					<!-- Backdrop for closing menu when clicked outside -->
-					<div class="fixed inset-0 z-40 bg-black/20" onclick={toggleMobileMenu}></div>
+					<button
+						class="fixed inset-0 z-40 bg-black/20"
+						onclick={toggleMobileMenu}
+						aria-label="Close mobile menu"
+					></button>
 				{/if}
 			{/if}
 		</div>

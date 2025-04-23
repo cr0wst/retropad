@@ -6,6 +6,8 @@
 	import SignInIcon from '~icons/mdi/account';
 	import ComingSoonWrapper from '$lib/components/coming-soon/ComingSoonWrapper.svelte';
 	import CallOut from '$lib/components/CallOut.svelte';
+	import TrashIcon from '~icons/mdi/trash';
+	import { formatDate } from '$lib/utils/dates';
 
 	// Use the pads data loaded from the server
 	interface Pad {
@@ -19,7 +21,7 @@
 	}
 
 	let { data } = $props();
-	const pads = $derived<Pad[]>(data.pads || []);
+	let pads = $state(data.pads || []);
 
 	function navigateToPad(id: string): void {
 		goto(`/pads/${id}`);
@@ -27,6 +29,25 @@
 
 	function navigateToCreate(): void {
 		goto('/pads/create');
+	}
+
+	// Add delete function
+	async function deletePad(id: string) {
+		try {
+			const response = await fetch(`/api/pads/${id}`, {
+				method: 'DELETE'
+			});
+
+			if (!response.ok) {
+				throw new Error('Failed to delete pad');
+			}
+
+			// Remove the pad from local state
+			pads = pads.filter((pad) => pad.id !== id);
+		} catch (error) {
+			console.error('Error deleting pad:', error);
+			// TODO: Show error toast or notification
+		}
 	}
 </script>
 
@@ -38,35 +59,52 @@
 
 			<div class="grid gap-4 md:grid-cols-2">
 				{#each pads as pad}
-					<a
-						href={`/pads/${pad.id}`}
-						class="block cursor-pointer rounded-lg border border-zinc-800 bg-zinc-900/60 p-4 transition-all hover:border-purple-800 hover:bg-zinc-900"
-					>
-						<div class="mb-1 flex items-center gap-2">
-							<GamepadIcon class="h-5 w-5 text-purple-400" />
-							<h3 class="text-lg font-medium text-white">{pad.name}</h3>
-						</div>
-
-						{#if pad.description}
-							<p class="mb-3 line-clamp-2 text-sm text-zinc-400">{pad.description}</p>
-						{/if}
-
-						<div class="flex items-center justify-between">
-							<div class="flex flex-wrap gap-1">
-								{#each pad.tags.slice(0, 3) as tag}
-									<span class="rounded-full bg-zinc-800 px-2 py-0.5 text-xs text-zinc-400"
-										>{tag}</span
-									>
-								{/each}
-								{#if pad.tags.length > 3}
-									<span class="text-xs text-zinc-500">+{pad.tags.length - 3}</span>
-								{/if}
+					<div class="group relative">
+						<a
+							href={`/pads/${pad.id}`}
+							class="block cursor-pointer rounded-lg border border-zinc-800 bg-zinc-900/60 p-4 transition-all hover:border-purple-800 hover:bg-zinc-900"
+						>
+							<div class="mb-1 flex items-center gap-2">
+								<GamepadIcon class="h-5 w-5 text-purple-400" />
+								<h3 class="text-lg font-medium text-white">{pad.name}</h3>
 							</div>
-							<span class="text-xs text-zinc-500">
-								{new Date(pad.updatedAt).toLocaleDateString()}
-							</span>
-						</div>
-					</a>
+
+							{#if pad.description}
+								<p class="mb-3 line-clamp-2 text-sm text-zinc-400">{pad.description}</p>
+							{/if}
+
+							<div class="flex items-center justify-between">
+								<div class="flex flex-wrap gap-1">
+									{#each pad.tags.slice(0, 3) as tag}
+										<span class="rounded-full bg-zinc-800 px-2 py-0.5 text-xs text-zinc-400"
+											>{tag}</span
+										>
+									{/each}
+									{#if pad.tags.length > 3}
+										<span class="text-xs text-zinc-500">+{pad.tags.length - 3}</span>
+									{/if}
+								</div>
+								<span class="text-xs text-zinc-500">
+									{formatDate(pad.updatedAt)}
+								</span>
+							</div>
+						</a>
+						<button
+							onclick={(e) => {
+								e.preventDefault();
+								e.stopPropagation();
+								if (
+									confirm('Are you sure you want to delete this pad? This action cannot be undone.')
+								) {
+									deletePad(pad.id);
+								}
+							}}
+							class="absolute top-3 right-3 z-10 rounded-md bg-zinc-800/50 p-2 text-zinc-400 opacity-0 transition-all duration-200 group-hover:opacity-100 hover:bg-red-500/20 hover:text-red-400"
+							aria-label="Delete pad"
+						>
+							<TrashIcon class="h-4 w-4" />
+						</button>
+					</div>
 				{/each}
 			</div>
 

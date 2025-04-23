@@ -4,7 +4,7 @@
 	let tooltipId = `tooltip-${Math.random().toString(36).slice(2)}`;
 	let mouseX = $state(0);
 	let mouseY = $state(0);
-	let tooltipElement: HTMLElement | null = null;
+	let tooltipElement = $state<HTMLElement | null>(null);
 
 	function updateTooltipPosition(event: MouseEvent) {
 		mouseX = event.clientX;

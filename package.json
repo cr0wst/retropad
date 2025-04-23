@@ -57,9 +57,11 @@
 		"@types/cheerio": "^0.22.35",
 		"arctic": "^3.6.0",
 		"better-sqlite3": "^11.9.1",
+		"clsx": "^2.1.1",
 		"dotenv": "^16.5.0",
 		"drizzle-orm": "^0.42.0",
 		"nanoid": "^5.1.5",
+		"tailwind-merge": "^3.2.0",
 		"ulid": "^3.0.0"
 	}
 }

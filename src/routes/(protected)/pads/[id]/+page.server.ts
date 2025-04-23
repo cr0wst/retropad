@@ -1,6 +1,9 @@
-import { padsTable } from '$lib/server/db/schema';
-import { error } from '@sveltejs/kit';
-import { eq } from 'drizzle-orm';
+import { padsTable, notesTable, bookmarksTable, generateId } from '$lib/server/db/schema';
+import { error, fail } from '@sveltejs/kit';
+import { eq, sql, desc, asc, inArray } from 'drizzle-orm';
+import { z } from 'zod';
+import { zod } from 'sveltekit-superforms/adapters';
+import { message, superValidate } from 'sveltekit-superforms/server';
 
 // Type definitions for bookmarks
 type Bookmark = {
@@ -9,6 +12,24 @@ type Bookmark = {
 	label: string;
 	color: string;
 };
+
+const noteSchema = z.object({
+	title: z
+		.string()
+		.min(1, { message: 'Please enter a title for your note' })
+		.max(100, { message: 'Title must be 100 characters or less' })
+		.trim(),
+	content: z
+		.string()
+		.min(1, { message: 'Please enter some content for your note' })
+		.max(50000, { message: 'Content must be 50,000 characters or less' })
+		.trim(),
+	tags: z
+		.string()
+		.max(500, { message: 'Tags must be 500 characters or less' })
+		.optional()
+		.transform((val) => (val === '' ? undefined : val))
+});
 
 // Generate mock notes for a pad
 function generateMockNotes(padId: string, padName: string) {
@@ -433,17 +454,97 @@ export const load = async ({ params, locals }) => {
 		throw error(403, 'Access denied');
 	}
 
-	// Generate mock notes and bookmarks
-	const mockNotes = generateMockNotes(pad.id, pad.name);
+	// Fetch real notes for this pad with explicit date selection
+	const notes = await locals.db
+		.select({
+			id: notesTable.id,
+			padId: notesTable.padId,
+			title: notesTable.title,
+			content: notesTable.content,
+			tags: notesTable.tags,
+			options: notesTable.options,
+			sortOrder: notesTable.sortOrder,
+			createdAt: sql<string>`datetime(${notesTable.createdAt}, 'unixepoch')`,
+			updatedAt: sql<string>`datetime(${notesTable.updatedAt}, 'unixepoch')`
+		})
+		.from(notesTable)
+		.where(eq(notesTable.padId, id))
+		.orderBy(asc(notesTable.id));
 
-	// Add bookmarks to each note
-	const notesWithBookmarks = mockNotes.map((note) => ({
+	// Fetch bookmarks for all notes
+	const bookmarks = await locals.db
+		.select()
+		.from(bookmarksTable)
+		.where(
+			inArray(
+				bookmarksTable.noteId,
+				notes.map((note) => note.id)
+			)
+		);
+
+	// Group bookmarks by note ID
+	const bookmarksByNoteId = bookmarks.reduce(
+		(acc, bookmark) => {
+			if (!acc[bookmark.noteId]) {
+				acc[bookmark.noteId] = [];
+			}
+			acc[bookmark.noteId].push(bookmark);
+			return acc;
+		},
+		{} as Record<string, typeof bookmarks>
+	);
+
+	// Convert dates to ISO strings and ensure options are present
+	const formattedNotes = notes.map((note) => ({
 		...note,
-		bookmarks: generateMockBookmarks(note.id, note.content)
+		createdAt: new Date(note.createdAt).toISOString(),
+		updatedAt: new Date(note.updatedAt).toISOString(),
+		options: note.options ?? JSON.stringify({ wordWrap: true }),
+		bookmarks: bookmarksByNoteId[note.id] || []
 	}));
 
 	return {
 		pad,
-		notes: notesWithBookmarks
+		notes: formattedNotes
 	};
+};
+
+export const actions = {
+	createNote: async ({ request, params, locals }) => {
+		if (!locals.user) {
+			return fail(401, { form: null, error: 'Unauthorized' });
+		}
+
+		// Get the pad and verify ownership
+		const pad = await locals.db.select().from(padsTable).where(eq(padsTable.id, params.id)).get();
+
+		if (!pad) {
+			return fail(404, { form: null, error: 'Pad not found' });
+		}
+
+		if (pad.ownerId !== locals.user.id) {
+			return fail(403, { form: null, error: 'Not authorized to modify this pad' });
+		}
+
+		const form = await superValidate(request, zod(noteSchema));
+
+		if (!form.valid) {
+			return fail(400, { form });
+		}
+
+		const [note] = await locals.db
+			.insert(notesTable)
+			.values({
+				id: generateId(),
+				padId: params.id,
+				ownerId: locals.user.id,
+				title: form.data.title,
+				content: form.data.content,
+				tags: form.data.tags,
+				options: JSON.stringify({ wordWrap: true })
+			})
+			.returning();
+
+		return { form };
+	}
 };
