@@ -1,0 +1,1 @@
+ALTER TABLE `auth_user` ADD `is_admin` integer DEFAULT false NOT NULL;

@@ -1,0 +1,41 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1745340775724,
+      "tag": "0000_bouncy_blade",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1745354317800,
+      "tag": "0001_lame_mentor",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1745370518336,
+      "tag": "0002_awesome_ultimates",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1745371723273,
+      "tag": "0003_futuristic_sir_ram",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1745376208731,
+      "tag": "0004_pink_elektra",
+      "breakpoints": true
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "rules": {
+    "formatting": {
+      "indentSize": 2,
+      "useTabs": false,
+      "maxLineLength": 100,
+      "trailingComma": "es5",
+      "semi": true,
+      "singleQuote": true
+    },
+    "linting": {
+      "typescript": {
+        "strict": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noImplicitAny": true
+      },
+      "svelte": {
+        "requireStoreCallbacksUseSetParameter": true,
+        "noAtHtmlTags": true,
+        "requireValidCompile": true,
+        "version": "5",
+        "useRunes": true,
+        "eventHandlers": {
+          "style": "svelte5",
+          "noColonPrefix": true
+        }
+      }
+    },
+    "structure": {
+      "components": "src/lib/components",
+      "stores": "src/lib/stores",
+      "types": "src/lib/types",
+      "utils": "src/lib/utils",
+      "routes": "src/routes"
+    },
+    "imports": {
+      "preferNamed": true,
+      "groupOrder": [
+        "^svelte",
+        "^@sveltejs",
+        "^\\$lib",
+        "^[./]"
+      ]
+    },
+    "testing": {
+      "framework": "vitest",
+      "coverage": {
+        "statements": 80,
+        "branches": 80,
+        "functions": 80,
+        "lines": 80
+      }
+    },
+    "interaction": {
+      "codeChanges": {
+        "incremental": true,
+        "maxChangesPerStep": 1,
+        "explainBeforeChange": true,
+        "waitForConfirmation": true
+      },
+      "teaching": {
+        "prioritizeLearning": true,
+        "explainConcepts": true,
+        "provideContext": true,
+        "suggestResources": true,
+        "breakDownComplexity": true
+      }
+    }
+  }
+} 
