@@ -64,6 +64,13 @@
       "when": 1745438891075,
       "tag": "0008_sudden_spencer_smythe",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "6",
+      "when": 1745465373167,
+      "tag": "0009_gigantic_goblin_queen",
+      "breakpoints": true
     }
   ]
 }

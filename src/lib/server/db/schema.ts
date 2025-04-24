@@ -25,7 +25,11 @@ export const authUserTable = sqliteTable('auth_user', {
 	provider: text('provider').notNull(),
 	avatarUrl: text('avatar_url').notNull(),
 	isAdmin: integer('is_admin', { mode: 'boolean' }).notNull().default(false),
-	createdAt: integer('created_at', timestampConfig).notNull()
+	isBanned: integer('is_banned', { mode: 'boolean' }).notNull().default(false),
+	bannedUntil: integer('banned_until', timestampConfig),
+	banReason: text('ban_reason'),
+	createdAt: integer('created_at', timestampConfig).notNull(),
+	updatedAt: integer('updated_at', timestampConfig)
 });
 
 export const authSessionTable = sqliteTable('auth_session', {

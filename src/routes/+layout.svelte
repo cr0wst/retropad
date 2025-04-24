@@ -244,7 +244,7 @@
 	<div
 		class={isPadView
 			? 'flex-1 overflow-hidden'
-			: 'container mx-auto flex flex-col gap-4 px-4 py-6 md:max-w-4xl'}
+			: 'container mx-auto flex flex-col gap-4 px-0 py-6 sm:px-4 md:max-w-7xl'}
 	>
 		{@render children()}
 	</div>

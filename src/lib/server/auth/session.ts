@@ -58,6 +58,23 @@ export async function validateSessionToken(
 		return { session: null, user: null };
 	}
 
+	if (row.auth_user.isBanned) {
+		if (row.auth_user.bannedUntil && Date.now() >= row.auth_user.bannedUntil.getTime()) {
+			await db
+				.update(authUserTable)
+				.set({
+					isBanned: false,
+					bannedUntil: null,
+					banReason: null,
+					updatedAt: new Date()
+				})
+				.where(eq(authUserTable.id, row.auth_user.id));
+		} else {
+			await invalidateSession(sessionId, db);
+			return { session: null, user: null };
+		}
+	}
+
 	if (Date.now() >= session.expiresAt.getTime() - 1000 * 60 * 60 * 24 * 15) {
 		session.expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 30);
 
