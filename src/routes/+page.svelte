@@ -8,6 +8,7 @@
 	import CallOut from '$lib/components/CallOut.svelte';
 	import TrashIcon from '~icons/mdi/trash';
 	import { formatDate } from '$lib/utils/dates';
+	import PrivacyDisclaimer from '$lib/components/PrivacyDisclaimer.svelte';
 
 	// Use the pads data loaded from the server
 	interface Pad {
@@ -116,6 +117,8 @@
 					Create New Pad
 				</button>
 			</div>
+
+			<PrivacyDisclaimer />
 		</div>
 	{:else}
 		<div class="mx-auto max-w-2xl py-12 text-center">
@@ -125,7 +128,7 @@
 			<div class="mt-8">
 				<CallOut
 					title="What is a Pad?"
-					content="A Pad is a collection of notes about a game. It can be used to store FAQs, walkthroughs, and your own gaming notes."
+					content="A Pad is a collection of notes about a game. It can be used to store FAQs, walkthroughs, and your own gaming notes. Please note that RetroPad is designed for gaming content only - do not store any sensitive or private information such as passwords, personal data, or financial information."
 				/>
 			</div>
 

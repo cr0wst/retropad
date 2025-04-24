@@ -220,13 +220,9 @@
 					>
 				</div>
 				<div class="flex items-center gap-4 text-zinc-400">
-					<a
-						href="https://github.com/cr0wst/retro-pad"
-						class="hover:text-purple-400"
-						target="_blank"
-						rel="noopener noreferrer">GitHub</a
-					>
-					<span>MIT License</span>
+					<a href="/help" class="hover:text-purple-400">Help</a>
+					<a href="/privacy" class="hover:text-purple-400">Privacy</a>
+					<a href="/license" class="hover:text-purple-400">License</a>
 				</div>
 			</div>
 		</div>
