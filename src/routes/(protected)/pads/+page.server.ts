@@ -1,52 +1,43 @@
 import { padsTable } from '$lib/server/db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, sql, desc } from 'drizzle-orm';
 import { error } from '@sveltejs/kit';
 
-// Helper to generate mock tags for pads
-function generateMockTags(padName: string, padId: string): string[] {
-	// Generate deterministic tags based on the pad name and ID
-	const tags = [];
-
-	// Add tags based on the first character of the name
-	const firstChar = padName.charAt(0).toLowerCase();
-	if ('abc'.includes(firstChar)) tags.push('personal');
-	if ('def'.includes(firstChar)) tags.push('work');
-	if ('ghij'.includes(firstChar)) tags.push('project');
-	if ('klmn'.includes(firstChar)) tags.push('ideas');
-	if ('opqr'.includes(firstChar)) tags.push('archive');
-	if ('stuv'.includes(firstChar)) tags.push('reference');
-	if ('wxyz'.includes(firstChar)) tags.push('notes');
-
-	// Add a tag based on character length
-	if (padName.length < 5) tags.push('quick');
-	else if (padName.length < 10) tags.push('detail');
-	else tags.push('documentation');
-
-	// Ensure we have at least one tag
-	if (tags.length === 0) tags.push('general');
-
-	return tags;
-}
-
 export const load = async ({ locals }) => {
+	// If user is not logged in, don't fetch pads
 	if (!locals.user) {
-		throw error(401, 'Unauthorized');
+		return {
+			pads: []
+		};
 	}
 
-	// Get all pads for this user
+	// Get all pads for this user with explicit date selection
 	const pads = await locals.db
-		.select()
+		.select({
+			id: padsTable.id,
+			ownerId: padsTable.ownerId,
+			name: padsTable.name,
+			description: padsTable.description,
+			createdAt: padsTable.createdAt,
+			updatedAt: padsTable.updatedAt
+		})
 		.from(padsTable)
 		.where(eq(padsTable.ownerId, locals.user.id))
-		.orderBy(padsTable.updatedAt);
+		.orderBy(desc(padsTable.updatedAt));
 
-	// Add mock tags for demonstration (in a real app, these would come from the database)
-	const padsWithTags = pads.map((pad) => ({
+	// Log raw data for debugging
+	console.log('Raw pads from DB:', pads);
+
+	// Convert timestamps to Date objects if they exist
+	const processedPads = pads.map((pad) => ({
 		...pad,
-		tags: generateMockTags(pad.name, pad.id)
+		createdAt: typeof pad.createdAt === 'number' ? new Date(pad.createdAt * 1000) : null,
+		updatedAt: typeof pad.updatedAt === 'number' ? new Date(pad.updatedAt * 1000) : null
 	}));
 
+	// Log processed data for debugging
+	console.log('Processed pads:', processedPads);
+
 	return {
-		pads: padsWithTags
+		pads: processedPads
 	};
 };

@@ -5,6 +5,7 @@
 	import AdminIcon from '~icons/mdi/shield-check';
 	import Logo from '~icons/mdi/gamepad-round-left';
 	import MenuIcon from '~icons/mdi/menu';
+	import GamepadIcon from '~icons/mdi/gamepad';
 	import { page } from '$app/state';
 	let { children } = $props();
 
@@ -16,6 +17,35 @@
 
 	function toggleMobileMenu() {
 		mobileMenuOpen = !mobileMenuOpen;
+	}
+
+	// Get current path for active state
+	const currentPath = $derived(page.url.pathname);
+
+	// Navigation structure
+	const navItems = [
+		{
+			label: 'Your Pads',
+			href: '/pads',
+			icon: GamepadIcon,
+			adminOnly: false,
+			// Match both /pads and any routes under /pads/
+			isActive: (path: string) => path.startsWith('/pads')
+		},
+		{
+			label: 'Admin Dashboard',
+			href: '/admin/dashboard',
+			icon: AdminButtonIcon,
+			adminOnly: true,
+			// Match both /admin and any routes under /admin/
+			isActive: (path: string) => path.startsWith('/admin')
+		}
+	];
+
+	// Helper to get active state classes
+	function getActiveClasses(isActive: boolean, isMobile = false) {
+		if (!isActive) return '';
+		return isMobile ? 'bg-purple-500/20 text-purple-100' : 'bg-purple-800/50 text-purple-100';
 	}
 </script>
 
@@ -65,41 +95,33 @@
 <div class="flex h-[100dvh] flex-col">
 	<nav class="bg-gradient-to-l from-zinc-800/50 to-purple-950/50 text-white">
 		<div class="flex flex-grow items-center justify-between px-4 py-2">
-			<!-- Logo and Create Button -->
-			<div class="flex items-center gap-2">
-				<!-- Logo -->
-				<a href="/" class="flex items-center gap-0 rounded text-xl font-bold">
-					<Logo class="mr-1 h-6 w-6" />
-					<span class="hidden sm:block">Retro</span>
-					<span class="sm:hidden">r</span>
-					<span class="hidden text-purple-500 sm:block">Pad</span>
-					<span class="text-purple-500 sm:hidden">p</span>
-				</a>
-
-				<!-- Create Pad Button - desktop only -->
-				{#if page.data.session && page.data.user}
-					<a
-						href="/pads/create"
-						class="hidden items-center rounded-md bg-purple-800 px-2 py-1 hover:bg-purple-700 sm:flex"
-					>
-						<AddIcon class="h-4 w-4" />
-						<span class="ml-1 text-sm text-purple-50">Pad</span>
-					</a>
-				{/if}
-			</div>
+			<!-- Logo -->
+			<a href="/" class="flex items-center gap-0 rounded text-xl font-bold">
+				<Logo class="mr-1 h-6 w-6" />
+				<span class="hidden sm:block">Retro</span>
+				<span class="sm:hidden">r</span>
+				<span class="hidden text-purple-500 sm:block">Pad</span>
+				<span class="text-purple-500 sm:hidden">p</span>
+			</a>
 
 			<!-- Desktop Navigation -->
-			<div class="hidden items-center gap-4 sm:flex">
-				{#if page.data.session && page.data.user}
-					<!-- Admin Button -->
-					{#if page.data.user.isAdmin}
-						<a
-							href="/admin/dashboard"
-							class="flex items-center gap-1 rounded border border-white/40 px-2 py-1 text-white/80 hover:bg-white/10"
-						>
-							<AdminButtonIcon class="h-4 w-4" /> Admin
-						</a>
-					{/if}
+			{#if page.data.session && page.data.user}
+				<div class="hidden items-center gap-4 sm:flex">
+					<!-- Navigation Links -->
+					{#each navItems as item}
+						{#if !item.adminOnly || (item.adminOnly && page.data.user.isAdmin)}
+							<a
+								href={item.href}
+								class="flex items-center gap-1 rounded px-3 py-1 text-white transition-colors hover:bg-purple-800/50 {getActiveClasses(
+									item.isActive(currentPath)
+								)}"
+								aria-current={item.isActive(currentPath) ? 'page' : undefined}
+							>
+								<svelte:component this={item.icon} class="h-4 w-4" />
+								{item.label}
+							</a>
+						{/if}
+					{/each}
 
 					<!-- User Profile Section -->
 					<div class="flex items-center gap-2">
@@ -122,21 +144,10 @@
 							</form>
 						</div>
 					</div>
-				{/if}
-			</div>
+				</div>
 
-			<!-- Mobile Navigation -->
-			{#if page.data.session && page.data.user}
+				<!-- Mobile Navigation -->
 				<div class="flex items-center gap-2 sm:hidden">
-					<!-- Create Pad Button - Mobile -->
-					<a
-						href="/pads/create"
-						class="flex items-center rounded-md bg-purple-800 px-2 py-1 hover:bg-purple-700"
-						aria-label="Create new pad"
-					>
-						<AddIcon class="h-4 w-4" />
-					</a>
-
 					<!-- Mobile Menu Button -->
 					<button
 						onclick={toggleMobileMenu}
@@ -158,31 +169,58 @@
 				<!-- Mobile Menu Dropdown -->
 				{#if mobileMenuOpen}
 					<div
-						class="absolute top-[52px] right-0 z-50 w-48 rounded-b-md border-x border-b border-zinc-700 bg-zinc-900 shadow-lg"
+						class="absolute top-[52px] right-0 z-50 w-64 rounded-b-lg border-x border-b border-zinc-700/50 bg-zinc-900/95 shadow-xl backdrop-blur-sm"
 					>
-						<div class="p-2">
-							<div class="border-b border-zinc-800 pb-2">
-								<p class="flex items-center gap-1 font-bold text-purple-50">
-									{page.data.user.name}
-									{#if page.data.user.isAdmin}
-										<AdminIcon class="h-4 w-4" />
-									{/if}
-								</p>
+						<!-- User Info -->
+						<div class="border-b border-zinc-800 p-4">
+							<div class="flex items-center gap-3">
+								<img
+									src={page.data.user.avatarUrl}
+									class="h-10 w-10 rounded-full"
+									alt={page.data.user.name}
+								/>
+								<div>
+									<p class="flex items-center gap-1 font-bold text-purple-50">
+										{page.data.user.name}
+										{#if page.data.user.isAdmin}
+											<AdminIcon class="h-4 w-4" />
+										{/if}
+									</p>
+									<p class="text-sm text-zinc-400">Signed in with Google</p>
+								</div>
 							</div>
-							<div class="py-2">
-								{#if page.data.user.isAdmin}
+						</div>
+
+						<!-- Navigation Links -->
+						<div class="p-2">
+							{#each navItems as item}
+								{#if !item.adminOnly || (item.adminOnly && page.data.user.isAdmin)}
 									<a
-										href="/admin/dashboard"
-										class="flex items-center gap-2 rounded px-2 py-1.5 hover:bg-zinc-800"
+										href={item.href}
+										onclick={() => (mobileMenuOpen = false)}
+										class="flex items-center gap-3 rounded-md px-3 py-2 text-white transition-colors hover:bg-purple-500/20 {getActiveClasses(
+											item.isActive(currentPath),
+											true
+										)}"
+										aria-current={item.isActive(currentPath) ? 'page' : undefined}
 									>
-										<AdminButtonIcon class="h-4 w-4" />
-										<span>Admin Dashboard</span>
+										<svelte:component this={item.icon} class="h-5 w-5 text-purple-300" />
+										<span>{item.label}</span>
 									</a>
 								{/if}
-								<form action="/logout" method="POST" class="w-full">
+							{/each}
+
+							<!-- Sign Out -->
+							<div class="mt-2 border-t border-zinc-800 pt-2">
+								<form
+									action="/logout"
+									method="POST"
+									class="w-full"
+									onclick={() => (mobileMenuOpen = false)}
+								>
 									<button
 										type="submit"
-										class="flex w-full items-center gap-2 rounded px-2 py-1.5 text-left hover:bg-zinc-800"
+										class="flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-red-400 transition-colors hover:bg-red-500/10"
 									>
 										Sign Out
 									</button>
@@ -191,9 +229,9 @@
 						</div>
 					</div>
 
-					<!-- Backdrop for closing menu when clicked outside -->
+					<!-- Backdrop -->
 					<button
-						class="fixed inset-0 z-40 bg-black/20"
+						class="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm"
 						onclick={toggleMobileMenu}
 						aria-label="Close mobile menu"
 					></button>
@@ -202,7 +240,7 @@
 		</div>
 	</nav>
 
-	<!-- Content area - use full width for pad views -->
+	<!-- Content area -->
 	<div
 		class={isPadView
 			? 'flex-1 overflow-hidden'
@@ -211,6 +249,7 @@
 		{@render children()}
 	</div>
 
+	<!-- Footer -->
 	<footer class="mt-auto bg-gradient-to-l from-zinc-800/50 to-purple-950/50 text-white">
 		<div class="flex flex-col gap-4 px-4 py-2">
 			<div class="flex items-center justify-between text-sm">
