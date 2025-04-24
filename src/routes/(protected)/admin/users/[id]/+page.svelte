@@ -189,7 +189,7 @@
 							</button>
 							<button
 								type="button"
-								on:click={() => (showBanForm = false)}
+								onclick={() => (showBanForm = false)}
 								class="rounded bg-zinc-700/50 px-4 py-2 text-white transition-colors hover:bg-zinc-700/70"
 							>
 								Cancel
@@ -198,7 +198,7 @@
 					</form>
 				{:else}
 					<button
-						on:click={() => (showBanForm = true)}
+						onclick={() => (showBanForm = true)}
 						class="flex w-full items-center gap-2 rounded bg-red-900/20 px-4 py-2 text-red-300 transition-colors hover:bg-red-900/30"
 					>
 						<BanIcon class="h-5 w-5" />

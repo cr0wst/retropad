@@ -1,6 +1,6 @@
 import { error } from '@sveltejs/kit';
-import { eq } from 'drizzle-orm';
-import { authUserTable } from '$lib/server/db/schema';
+import { eq, inArray } from 'drizzle-orm';
+import { authUserTable, padsTable, notesTable, bookmarksTable } from '$lib/server/db/schema';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals, params }) => {
@@ -144,7 +144,40 @@ export const actions: Actions = {
 			throw error(403, 'Not authorized');
 		}
 
-		// Delete the user
+		// Get all pads owned by the user
+		const userPads = await db
+			.select({
+				id: padsTable.id
+			})
+			.from(padsTable)
+			.where(eq(padsTable.ownerId, params.id));
+
+		const padIds = userPads.map((pad) => pad.id);
+
+		if (padIds.length > 0) {
+			// Get all notes in these pads
+			const userNotes = await db
+				.select({
+					id: notesTable.id
+				})
+				.from(notesTable)
+				.where(inArray(notesTable.padId, padIds));
+
+			const noteIds = userNotes.map((note) => note.id);
+
+			if (noteIds.length > 0) {
+				// Delete all bookmarks in these notes
+				await db.delete(bookmarksTable).where(inArray(bookmarksTable.noteId, noteIds));
+			}
+
+			// Delete all notes in user's pads
+			await db.delete(notesTable).where(inArray(notesTable.padId, padIds));
+		}
+
+		// Delete all pads owned by the user
+		await db.delete(padsTable).where(eq(padsTable.ownerId, params.id));
+
+		// Finally delete the user
 		await db.delete(authUserTable).where(eq(authUserTable.id, params.id));
 
 		// Redirect to the users list

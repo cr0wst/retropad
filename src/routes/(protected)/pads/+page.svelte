@@ -40,13 +40,13 @@
 </script>
 
 {#if pads.length > 0}
-	<div class="mx-auto max-w-4xl p-4 sm:py-6">
-		<div class="mb-6">
+	<div class="flex flex-col gap-6">
+		<header>
 			<h1 class="text-2xl font-bold">Your Pads</h1>
 			<p class="text-zinc-400">Browse and manage your collection of game notes</p>
-		</div>
+		</header>
 
-		<div class="grid gap-4">
+		<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 			{#each pads as pad}
 				<div class="group relative">
 					<a
@@ -100,7 +100,7 @@
 			{/each}
 		</div>
 
-		<div class="mt-8 flex justify-center">
+		<div class="flex justify-center sm:justify-start">
 			<a
 				href="/pads/create"
 				class="flex items-center gap-2 rounded-md bg-purple-700/50 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-purple-700"
@@ -111,7 +111,7 @@
 		</div>
 	</div>
 {:else}
-	<div class="mx-auto max-w-2xl p-4 py-12 sm:py-16">
+	<div class="flex min-h-[50vh] flex-col items-center justify-center">
 		<div class="text-center">
 			<div
 				class="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-purple-900/50"
@@ -121,7 +121,7 @@
 			<h1 class="text-2xl font-bold">Start Your Collection</h1>
 			<p class="mt-2 text-zinc-400">Create your first pad to begin organizing your game notes</p>
 
-			<div class="mt-8">
+			<div class="mt-8 max-w-xl">
 				<CallOut
 					title="What is a Pad?"
 					content="A Pad is a collection of notes about a game. It can be used to store FAQs, walkthroughs, and your own gaming notes."

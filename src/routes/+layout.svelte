@@ -6,11 +6,12 @@
 	import Logo from '~icons/mdi/gamepad-round-left';
 	import MenuIcon from '~icons/mdi/menu';
 	import GamepadIcon from '~icons/mdi/gamepad';
-	import { page } from '$app/state';
+	import { page } from '$app/stores';
+	import type { MouseEventHandler, KeyboardEventHandler } from 'svelte/elements';
 	let { children } = $props();
 
 	// Check if we're on a pad view page
-	const isPadView = $derived(page.route.id?.startsWith('/(protected)/pads/[id]') || false);
+	const isPadView = $derived($page.route.id?.startsWith('/(protected)/pads/[id]') || false);
 
 	// Mobile menu state
 	let mobileMenuOpen = $state(false);
@@ -20,7 +21,7 @@
 	}
 
 	// Get current path for active state
-	const currentPath = $derived(page.url.pathname);
+	const currentPath = $derived($page.url.pathname);
 
 	// Navigation structure
 	const navItems = [
@@ -105,11 +106,11 @@
 			</a>
 
 			<!-- Desktop Navigation -->
-			{#if page.data.session && page.data.user}
+			{#if $page.data.session && $page.data.user}
 				<div class="hidden items-center gap-4 sm:flex">
 					<!-- Navigation Links -->
 					{#each navItems as item}
-						{#if !item.adminOnly || (item.adminOnly && page.data.user.isAdmin)}
+						{#if !item.adminOnly || (item.adminOnly && $page.data.user.isAdmin)}
 							<a
 								href={item.href}
 								class="flex items-center gap-1 rounded px-3 py-1 text-white transition-colors hover:bg-purple-800/50 {getActiveClasses(
@@ -126,14 +127,14 @@
 					<!-- User Profile Section -->
 					<div class="flex items-center gap-2">
 						<img
-							src={page.data.user.avatarUrl}
+							src={$page.data.user.avatarUrl}
 							class="h-8 w-8 rounded-full"
-							alt={page.data.user.name}
+							alt={$page.data.user.name}
 						/>
 						<div class="flex flex-col">
 							<span class="flex items-center gap-1 text-sm font-bold text-purple-50">
-								{page.data.user.name}
-								{#if page.data.user.isAdmin}
+								{$page.data.user.name}
+								{#if $page.data.user.isAdmin}
 									<AdminIcon class="h-4 w-4" />
 								{/if}
 							</span>
@@ -160,9 +161,9 @@
 
 					<!-- Mobile Avatar -->
 					<img
-						src={page.data.user.avatarUrl}
+						src={$page.data.user.avatarUrl}
 						class="h-8 w-8 rounded-full"
-						alt={page.data.user.name}
+						alt={$page.data.user.name}
 					/>
 				</div>
 
@@ -175,14 +176,14 @@
 						<div class="border-b border-zinc-800 p-4">
 							<div class="flex items-center gap-3">
 								<img
-									src={page.data.user.avatarUrl}
+									src={$page.data.user.avatarUrl}
 									class="h-10 w-10 rounded-full"
-									alt={page.data.user.name}
+									alt={$page.data.user.name}
 								/>
 								<div>
 									<p class="flex items-center gap-1 font-bold text-purple-50">
-										{page.data.user.name}
-										{#if page.data.user.isAdmin}
+										{$page.data.user.name}
+										{#if $page.data.user.isAdmin}
 											<AdminIcon class="h-4 w-4" />
 										{/if}
 									</p>
@@ -194,7 +195,7 @@
 						<!-- Navigation Links -->
 						<div class="p-2">
 							{#each navItems as item}
-								{#if !item.adminOnly || (item.adminOnly && page.data.user.isAdmin)}
+								{#if !item.adminOnly || (item.adminOnly && $page.data.user.isAdmin)}
 									<a
 										href={item.href}
 										onclick={() => (mobileMenuOpen = false)}
@@ -212,14 +213,14 @@
 
 							<!-- Sign Out -->
 							<div class="mt-2 border-t border-zinc-800 pt-2">
-								<form
-									action="/logout"
-									method="POST"
-									class="w-full"
-									onclick={() => (mobileMenuOpen = false)}
-								>
+								<form action="/logout" method="POST" class="w-full">
 									<button
 										type="submit"
+										onclick={((e) =>
+											(mobileMenuOpen = false)) satisfies MouseEventHandler<HTMLButtonElement>}
+										onkeydown={((e) =>
+											e.key === 'Enter' &&
+											(mobileMenuOpen = false)) satisfies KeyboardEventHandler<HTMLButtonElement>}
 										class="flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-red-400 transition-colors hover:bg-red-500/10"
 									>
 										Sign Out
@@ -231,8 +232,8 @@
 
 					<!-- Backdrop -->
 					<button
-						class="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm"
 						onclick={toggleMobileMenu}
+						class="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm"
 						aria-label="Close mobile menu"
 					></button>
 				{/if}
