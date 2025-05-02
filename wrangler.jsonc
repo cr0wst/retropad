@@ -15,17 +15,16 @@
 	"route": {
 		"pattern": "app.retropad.io",
 		"custom_domain": true
-
 	},
 	"observability": {
 		"enabled": true
 	},
 	"d1_databases": [
 		{
-		  "binding": "DB",
-		  "database_name": "retro-pad-db",
-		  "database_id": "628f6d1c-98f8-401f-ad49-09b7634fd201",
-		  "migrations_dir": "./drizzle/migrations"
+			"binding": "DB",
+			"database_name": "retro-pad-db",
+			"database_id": "628f6d1c-98f8-401f-ad49-09b7634fd201",
+			"migrations_dir": "./drizzle/migrations"
 		}
 	],
 	"vars": {

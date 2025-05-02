@@ -118,7 +118,7 @@
 								)}"
 								aria-current={item.isActive(currentPath) ? 'page' : undefined}
 							>
-								<svelte:component this={item.icon} class="h-4 w-4" />
+								<item.icon class="h-4 w-4" />
 								{item.label}
 							</a>
 						{/if}
@@ -205,7 +205,7 @@
 										)}"
 										aria-current={item.isActive(currentPath) ? 'page' : undefined}
 									>
-										<svelte:component this={item.icon} class="h-5 w-5 text-purple-300" />
+										<item.icon class="h-5 w-5 text-purple-300" />
 										<span>{item.label}</span>
 									</a>
 								{/if}

@@ -1,10 +1,3 @@
-<!--
-  This component shows the current save status of a note.
-  It displays different icons and text based on whether the note is:
-  - saved (checkmark)
-  - saving (spinner)
-  - error (x)
--->
 <script lang="ts">
 	import CheckIcon from '~icons/mdi/check-circle';
 	import LoadingIcon from '~icons/mdi/loading';

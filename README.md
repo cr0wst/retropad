@@ -16,7 +16,7 @@ To setup the project locally, start by cloning the repository, and installing de
 
 ```sh
 git clone git@github.com:cr0wst/retropad.git
-pnpm install
+npm install
 ```
 
 Copy the `.env.example` file to `.env` and fill in the values:
@@ -28,7 +28,7 @@ cp .env.example .env
 And, finally, run your local environment:
 
 ```sh
-pnpm run dev
+npm run dev
 ```
 
 ## Deployment
