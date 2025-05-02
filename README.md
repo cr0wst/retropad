@@ -1,38 +1,45 @@
-# sv
+# RetroPad
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+<p align="center">
+  <img src="static/favicon.svg" alt="RetroPad Logo" width="80" />
+</p>
 
-## Creating a project
+![Build Status](https://github.com/cr0wst/retropad/actions/workflows/deploy.yaml/badge.svg)
 
-If you're seeing this, you've probably already done this step. Congrats!
+RetroPad is your digital gaming notebook, like your vintage gaming binder, brought into the modern world.
 
-```bash
-# create a new project in the current directory
-npx sv create
+Organize your game notes and collaborate with others.
 
-# create a new project in my-app
-npx sv create my-app
+## Running Locally
+
+To setup the project locally, start by cloning the repository, and installing dependencies:
+
+```sh
+git clone git@github.com:cr0wst/retropad.git
+pnpm install
 ```
 
-## Developing
+Copy the `.env.example` file to `.env` and fill in the values:
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+```sh
+cp .env.example .env
 ```
 
-## Building
+And, finally, run your local environment:
 
-To create a production version of your app:
-
-```bash
-npm run build
+```sh
+pnpm run dev
 ```
 
-You can preview the production build with `npm run preview`.
+## Deployment
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+RetroPad is designed to deploy to [Cloudflare Workers](https://developers.cloudflare.com/workers/).
+
+- See `.github/workflows/deploy.yaml` for CI/CD setup.
+- Database migrations use Cloudflare D1.
+
+---
+
+## License
+
+[MIT](LICENSE)
