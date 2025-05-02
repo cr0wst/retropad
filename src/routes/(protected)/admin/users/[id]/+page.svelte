@@ -177,7 +177,7 @@
 								bind:value={banReason}
 								rows="3"
 								class="w-full rounded bg-zinc-900/50 px-3 py-2 text-white transition-colors focus:bg-zinc-900/70"
-							/>
+							></textarea>
 						</div>
 						<div class="flex flex-wrap gap-3">
 							<button
