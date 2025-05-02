@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@fontsource/inter':
+        specifier: ^5.2.5
+        version: 5.2.5
       '@libsql/client':
         specifier: ^0.15.4
         version: 0.15.4
@@ -633,6 +636,9 @@ packages:
   '@fastify/busboy@2.1.1':
     resolution: {integrity: sha512-vBZP4NlzfOlerQTnba4aqZoMhE/a9HY7HRqoOPaETQcSQuWEIyZMHGfVu6w9wGtGK5fED5qRs2DteVCjOH60sA==}
     engines: {node: '>=14'}
+
+  '@fontsource/inter@5.2.5':
+    resolution: {integrity: sha512-kbsPKj0S4p44JdYRFiW78Td8Ge2sBVxi/PIBwmih+RpSXUdvS9nbs1HIiuUSPtRMi14CqLEZ/fbk7dj7vni1Sg==}
 
   '@gcornut/valibot-json-schema@0.31.0':
     resolution: {integrity: sha512-3xGptCurm23e7nuPQkdrE5rEs1FeTPHhAUsBuwwqG4/YeZLwJOoYZv+fmsppUEfo5y9lzUwNQrNqLS/q7HMc7g==}
@@ -2778,6 +2784,8 @@ snapshots:
     optional: true
 
   '@fastify/busboy@2.1.1': {}
+
+  '@fontsource/inter@5.2.5': {}
 
   '@gcornut/valibot-json-schema@0.31.0':
     dependencies:

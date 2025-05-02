@@ -3,7 +3,7 @@
 	import AddIcon from '~icons/mdi/plus';
 	import AdminButtonIcon from '~icons/mdi/cog-outline';
 	import AdminIcon from '~icons/mdi/shield-check';
-	import Logo from '~icons/mdi/gamepad-round-left';
+	import Logo from '$lib/components/Logo.svelte';
 	import MenuIcon from '~icons/mdi/menu';
 	import GamepadIcon from '~icons/mdi/gamepad';
 	import { page } from '$app/stores';
@@ -62,7 +62,7 @@
 
 	<!-- Favicon -->
 	<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-	<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+	<link rel="apple-touch-icon" href="./favicon.svg" />
 
 	<!-- Mobile Specific -->
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -78,7 +78,7 @@
 		content="RetroPad is like your vintage gaming binder brought into the modern world. Organize your game notes, and collaborate with others."
 	/>
 	<meta property="og:site_name" content="RetroPad" />
-	<meta property="og:image" content="https://retropad.io/og-image.png" />
+	<meta property="og:image" content="https://retropad.io/favicon.svg" />
 	<meta property="og:image:width" content="1200" />
 	<meta property="og:image:height" content="630" />
 
@@ -90,7 +90,7 @@
 		property="twitter:description"
 		content="RetroPad is like your vintage gaming binder brought into the modern world. Organize your game notes, and collaborate with others."
 	/>
-	<meta property="twitter:image" content="https://retropad.io/og-image.png" />
+	<meta property="twitter:image" content="https://retropad.io/favicon.svg" />
 </svelte:head>
 
 <div class="flex h-[100dvh] flex-col">
@@ -98,7 +98,7 @@
 		<div class="flex flex-grow items-center justify-between px-4 py-2">
 			<!-- Logo -->
 			<a href="/" class="flex items-center gap-0 rounded text-xl font-bold">
-				<Logo class="mr-1 h-6 w-6" />
+				<Logo class="mr-1 aspect-square h-8" />
 				<span class="hidden sm:block">Retro</span>
 				<span class="sm:hidden">r</span>
 				<span class="hidden text-purple-500 sm:block">Pad</span>
@@ -254,8 +254,8 @@
 	<footer class="mt-auto bg-gradient-to-l from-zinc-800/50 to-purple-950/50 text-white">
 		<div class="flex flex-col gap-4 px-4 py-2">
 			<div class="flex items-center justify-between text-sm">
-				<div class="flex items-center">
-					© 2025 <Logo class="mr-1 ml-2 h-4 w-4" /> <span class="font-bold">Retro</span><span
+				<div class="font-family-[Inter] flex items-center">
+					© 2025 <Logo class="ml-2 h-4 w-4" /> <span class="font-bold">Retro</span><span
 						class="font-bold text-purple-500">Pad</span
 					>
 				</div>
